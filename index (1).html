@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roblox Audio Studio — Professional Sound Workstation</title>
+    <link rel="stylesheet" href="/static/style.css?v=2.1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body class="studio-dark">
+    <!-- Top Navigation Bar -->
+    <header class="top-nav">
+        <div class="nav-brand">
+            <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 18V5l12-2v13"></path>
+                <circle cx="6" cy="18" r="3"></circle>
+                <circle cx="18" cy="16" r="3"></circle>
+            </svg>
+            <div class="brand-titles">
+                <span class="brand-name">ROBLOX AUDIO STUDIO</span>
+                <span class="brand-version">PRO DAW v2.0</span>
+            </div>
+        </div>
+
+        <nav class="nav-tabs">
+            <button class="tab-btn active" data-tab="tab-editor">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="4" y1="21" x2="4" y2="14"></line>
+                    <line x1="4" y1="10" x2="4" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="12"></line>
+                    <line x1="12" y1="8" x2="12" y2="3"></line>
+                    <line x1="20" y1="21" x2="20" y2="16"></line>
+                    <line x1="20" y1="12" x2="20" y2="3"></line>
+                </svg>
+                <span>Timeline Editor</span>
+            </button>
+            <button class="tab-btn" data-tab="tab-artist">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <span>Artist Catalog &amp; Sniffer</span>
+            </button>
+            <button class="tab-btn" data-tab="tab-loudness">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                </svg>
+                <span>Deep Loudness Inspector</span>
+            </button>
+            <button class="tab-btn" data-tab="tab-places">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                </svg>
+                <span>Map Compatibility Scanner</span>
+            </button>
+            <button class="tab-btn" data-tab="tab-upload">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+                <span>Roblox Uploader</span>
+            </button>
+        </nav>
+
+        <div class="nav-status">
+            <span class="status-indicator"></span>
+            <span class="status-text">Studio Engine Ready</span>
+        </div>
+    </header>
+
+    <!-- App Content Wrapper -->
+    <main class="app-container">
+
+        <!-- ================================================================= -->
+        <!-- TAB 1: AUDIO TIMELINE EDITOR (MAIN WORKSPACE)                     -->
+        <!-- ================================================================= -->
+        <section id="tab-editor" class="tab-content active">
+
+            <!-- Audio Import Strip (Universal Platforms Supported) -->
+            <div class="import-strip">
+                <div class="import-col-yt">
+                    <label class="section-label">นำเข้าเสียงจาก URL (YouTube, Spotify, Apple Music, SoundCloud, TikTok หรือไฟล์เสียงตรง)</label>
+                    <div class="input-inline">
+                        <input type="text" id="ytUrlInput" placeholder="วางลิงก์ เช่น https://open.spotify.com/..., https://www.youtube.com/..., https://music.apple.com/..." autocomplete="off">
+                        <button id="ytLoadBtn" class="btn btn-secondary">
+                            <span class="btn-spinner hidden"></span>
+                            <span>ดึงข้อมูลเสียง</span>
+                        </button>
+                    </div>
+                    <div id="ytBlockedNotice" class="yt-blocked-notice hidden">
+                        <span id="ytBlockedMsg" class="yt-blocked-msg">ไม่สามารถโหลดผ่าน URL ได้ กรุณาอัปโหลดไฟล์เสียงจากเครื่องของคุณโดยตรง</span>
+                        <button type="button" id="ytFallbackUploadBtn" class="btn btn-secondary btn-sm">เลือกไฟล์เสียงจากเครื่อง (MP3/WAV/OGG)</button>
+                    </div>
+                </div>
+
+                <div class="import-divider"><span>หรือ</span></div>
+
+                <div class="import-col-file">
+                    <label class="section-label">อัปโหลดไฟล์เพลงหลักจากเครื่อง (MP3, WAV, OGG, M4A)</label>
+                    <div class="file-dropzone" id="fileDropzone">
+                        <input type="file" id="localFileInput" accept="audio/*" class="file-input-hidden" style="display: none !important;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        <span id="fileDropText">คลิกเพื่อเลือกไฟล์ หรือลากไฟล์เพลงหลักมาวางที่นี่</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Project Audio Clips & Intro Bin (Staging Area) -->
+            <div class="clips-bin-card">
+                <div class="clips-bin-header">
+                    <div class="clips-bin-title-wrap">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mini-icon">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="9" y1="3" x2="9" y2="21"></line>
+                        </svg>
+                        <span class="clips-bin-heading">กล่องคลิปเสียงและอินโทร (Project Audio Clips Bin)</span>
+                        <span class="badge-tag">Staging Area</span>
+                    </div>
+                    <p class="clips-bin-desc">เพิ่มไฟล์อินโทร หรือคลิปเสียงสำหรับเปิดหัว โดยสามารถกดวางต่อหน้าเพลงบน Timeline เพื่อฟังรวมทั้งเพลงสดๆ ก่อนส่งออกได้ทันที</p>
+                </div>
+
+                <div class="clips-bin-body">
+                    <!-- Dropzone to add new intro/clip -->
+                    <div class="clip-dropzone" id="introDropzone">
+                        <input type="file" id="introFileInput" accept="audio/*" class="file-input-hidden" style="display: none !important;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mini-icon">
+                            <path d="M12 5v14M5 12h14"></path>
+                        </svg>
+                        <span id="introDropText">คลิกเพื่อเลือกไฟล์อินโทร / Sound Tag หรือลากไฟล์มาใส่ที่นี่ (MP3, WAV, OGG)</span>
+                    </div>
+
+                    <!-- Staged Intro Clip Card -->
+                    <div id="introActiveCard" class="staged-clip-card hidden">
+                        <div class="clip-card-header">
+                            <div class="clip-meta-left">
+                                <span class="badge-tag-clip">[STAGED INTRO]</span>
+                                <span id="introFileName" class="clip-title">intro.mp3</span>
+                                <span id="introFileSize" class="clip-duration">(0.0 KB)</span>
+                            </div>
+                            <span id="introStatusBadge" class="badge-status-ready">[READY IN BIN]</span>
+                        </div>
+                        <div class="clip-card-actions">
+                            <button type="button" id="btnPreviewIntro" class="btn btn-secondary btn-sm">ฟังเสียงคลิป</button>
+                            <button type="button" id="btnApplyIntroTimeline" class="btn btn-primary btn-sm">นำไปวางเป็น Intro บน Timeline</button>
+                            <button type="button" id="btnRevertOriginalTrack" class="btn btn-secondary btn-sm hidden">คืนค่าเพลงเดิม (Revert)</button>
+                            <button type="button" id="btnRemoveIntro" class="btn btn-danger btn-sm">ลบคลิป</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Track Inspector -->
+            <div id="trackInspector" class="track-inspector hidden">
+                <div class="inspector-details">
+                    <h2 id="trackTitle" class="inspector-title">Track Name</h2>
+                    <div class="inspector-meta">
+                        <span id="trackDuration">00:00</span>
+                        <span class="meta-sep">•</span>
+                        <span id="trackFormat">Native Audio</span>
+                        <span class="meta-sep">•</span>
+                        <span id="trackSampleRate">48000 Hz</span>
+                    </div>
+                </div>
+                <div class="inspector-presets">
+                    <span class="preset-label">Presets ด่วน:</span>
+                    <button class="preset-pill" data-preset="nightcore">Nightcore</button>
+                    <button class="preset-pill" data-preset="slowed">Slowed + Reverb</button>
+                    <button class="preset-pill" data-preset="bassboost">Bass Boosted</button>
+                    <button class="preset-pill" data-preset="loudnorm">Normalize</button>
+                    <button class="preset-pill" data-preset="reset">ค่าเริ่มต้น</button>
+                </div>
+            </div>
+
+            <!-- Interactive Timeline Workspace -->
+            <div id="timelineContainer" class="timeline-container">
+                <!-- Transport Controls Bar -->
+                <div class="transport-bar">
+                    <div class="transport-left">
+                        <button id="btnPlayPause" class="transport-btn btn-play" title="Play / Pause (Spacebar)">
+                            <svg id="iconPlay" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                            <svg id="iconPause" class="hidden" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+                        </button>
+                        <button id="btnStop" class="transport-btn" title="Stop">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="5" width="14" height="14" rx="2"></rect></svg>
+                        </button>
+                        <button id="btnLoop" class="transport-btn" title="Loop Section">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 2l4 4-4 4"></path><path d="M3 11v-1a4 4 0 0 1 4-4h14"></path><path d="M7 22l-4-4 4-4"></path><path d="M21 13v1a4 4 0 0 1-4 4H3"></path></svg>
+                        </button>
+                    </div>
+
+                    <div class="transport-time-display">
+                        <span id="currentTimeDisplay" class="digital-time">00:00.00</span>
+                        <span class="time-slash">/</span>
+                        <span id="totalTimeDisplay" class="digital-time-muted">00:00.00</span>
+                    </div>
+
+                    <div class="transport-trim-controls">
+                        <div class="trim-input-group">
+                            <label>จุดเริ่ม (In):</label>
+                            <input type="number" id="trimStartInput" step="0.1" min="0" value="0.0">
+                            <span class="sec-label">s</span>
+                            <div class="nudge-btn-group">
+                                <button id="btnNudgeInM1" class="btn-nudge" title="เลื่อนถอยหลัง 1 วินาที">-1s</button>
+                                <button id="btnNudgeInM01" class="btn-nudge" title="เลื่อนถอยหลัง 0.1 วินาที">-0.1s</button>
+                                <button id="btnNudgeInP01" class="btn-nudge" title="เลื่อนไปข้างหน้า 0.1 วินาที">+0.1s</button>
+                                <button id="btnNudgeInP1" class="btn-nudge" title="เลื่อนไปข้างหน้า 1 วินาที">+1s</button>
+                            </div>
+                            <button id="btnSetInPoint" class="btn-micro" title="กำหนดเวลาปัจจุบันเป็นจุดตัดเริ่มต้น">Set In</button>
+                        </div>
+                        <div class="trim-input-group">
+                            <label>จุดจบ (Out):</label>
+                            <input type="number" id="trimEndInput" step="0.1" min="0" value="0.0">
+                            <span class="sec-label">s</span>
+                            <div class="nudge-btn-group">
+                                <button id="btnNudgeOutM1" class="btn-nudge" title="เลื่อนถอยหลัง 1 วินาที">-1s</button>
+                                <button id="btnNudgeOutM01" class="btn-nudge" title="เลื่อนถอยหลัง 0.1 วินาที">-0.1s</button>
+                                <button id="btnNudgeOutP01" class="btn-nudge" title="เลื่อนไปข้างหน้า 0.1 วินาที">+0.1s</button>
+                                <button id="btnNudgeOutP1" class="btn-nudge" title="เลื่อนไปข้างหน้า 1 วินาที">+1s</button>
+                            </div>
+                            <button id="btnSetOutPoint" class="btn-micro" title="กำหนดเวลาปัจจุบันเป็นจุดตัดสิ้นสุด">Set Out</button>
+                        </div>
+                    </div>
+
+                    <div class="transport-right">
+                        <button id="btnZoomOut" class="transport-btn" title="Zoom Out">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg>
+                        </button>
+                        <button id="btnZoomIn" class="transport-btn" title="Zoom In">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="11" y1="8" x2="11" y2="14"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quick Trim Presets Bar -->
+                <div class="quick-trim-bar">
+                    <span class="quick-trim-label">Quick Trim เครื่องมือตัดด่วน:</span>
+                    <button id="btnQuickTrim15" class="quick-trim-btn">ตัด 15s แรก</button>
+                    <button id="btnQuickTrim30" class="quick-trim-btn">ตัด 30s แรก</button>
+                    <button id="btnQuickTrim60" class="quick-trim-btn">ตัด 60s แรก</button>
+                    <button id="btnQuickTrimHook" class="quick-trim-btn">ตัดท่อนฮุค (กลางเพลง 30s)</button>
+                    <button id="btnQuickTrimCursorIn" class="quick-trim-btn">Set In จากหัวอ่าน</button>
+                    <button id="btnQuickTrimCursorOut" class="quick-trim-btn">Set Out จากหัวอ่าน</button>
+                    <button id="btnQuickTrimFull" class="quick-trim-btn active-reset">เต็มเพลง (Reset)</button>
+                </div>
+
+                <!-- Timeline Ruler & Canvas Track Area -->
+                <div class="timeline-viewport" id="timelineViewport">
+                    <canvas id="timelineRuler" class="timeline-ruler-canvas" height="24"></canvas>
+                    
+                    <div class="waveform-wrapper" id="waveformWrapper">
+                        <canvas id="waveformCanvas" class="waveform-canvas" height="140"></canvas>
+                        
+                        <!-- Draggable Trim Handles & Region Overlay -->
+                        <div id="selectionOverlay" class="selection-overlay"></div>
+                        <div id="trimHandleStart" class="trim-handle handle-start" title="Drag to trim start">
+                            <div class="handle-line"></div>
+                            <span class="handle-tag">IN</span>
+                        </div>
+                        <div id="trimHandleEnd" class="trim-handle handle-end" title="Drag to trim end">
+                            <div class="handle-line"></div>
+                            <span class="handle-tag">OUT</span>
+                        </div>
+                        
+                        <!-- Playhead Scrubber Cursor -->
+                        <div id="playheadCursor" class="playhead-cursor">
+                            <div class="playhead-head"></div>
+                            <div class="playhead-line"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Studio Mastering Controls (Sliders & Switches) -->
+            <div class="mastering-panel">
+                <div class="control-card">
+                    <div class="control-header">
+                        <span class="control-title">เพิ่มความดัง / ระดับเสียง (Gain)</span>
+                        <span id="volumeVal" class="control-value">0.0 dB</span>
+                    </div>
+                    <input type="range" id="volumeSlider" min="-18" max="18" step="0.5" value="0">
+                    <div class="slider-ticks">
+                        <span>-18dB</span>
+                        <span>0dB (Orig)</span>
+                        <span>+18dB (Boost)</span>
+                    </div>
+                    <div class="toggle-row">
+                        <label class="switch-label">
+                            <input type="checkbox" id="normalizeToggle">
+                            <span class="switch-custom"></span>
+                            <span class="toggle-text">Normalize Loudness (ปรับความดังสม่ำเสมอ -14 LUFS)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="control-card">
+                    <div class="control-header">
+                        <span class="control-title">ความเร็วเสียง (Speed)</span>
+                        <span id="speedVal" class="control-value">1.00x</span>
+                    </div>
+                    <input type="range" id="speedSlider" min="0.5" max="2.0" step="0.05" value="1.0">
+                    <div class="slider-ticks">
+                        <span>0.5x</span>
+                        <span>1.0x (ปกติ)</span>
+                        <span>2.0x</span>
+                    </div>
+
+                    <div class="control-header mt-4">
+                        <span class="control-title">ระดับเสียงทุ้ม-แหลม (Pitch Shift)</span>
+                        <span id="pitchVal" class="control-value">0 st</span>
+                    </div>
+                    <input type="range" id="pitchSlider" min="-12" max="12" step="1" value="0">
+                    <div class="slider-ticks">
+                        <span>-12 st (ทุ้มลึก)</span>
+                        <span>0 (ต้นฉบับ)</span>
+                        <span>+12 st (แหลมสูง)</span>
+                    </div>
+                </div>
+
+                <div class="control-card">
+                    <div class="control-header">
+                        <span class="control-title">Equalizer: เบสทุ้ม (Bass Boost)</span>
+                        <span id="bassVal" class="control-value">0.0 dB</span>
+                    </div>
+                    <input type="range" id="bassSlider" min="0" max="15" step="0.5" value="0">
+                    <div class="slider-ticks">
+                        <span>0dB</span>
+                        <span>+7.5dB</span>
+                        <span>+15dB</span>
+                    </div>
+
+                    <div class="control-header mt-4">
+                        <span class="control-title">Equalizer: เสียงแหลม (Treble Boost)</span>
+                        <span id="trebleVal" class="control-value">0.0 dB</span>
+                    </div>
+                    <input type="range" id="trebleSlider" min="0" max="12" step="0.5" value="0">
+                    <div class="slider-ticks">
+                        <span>0dB</span>
+                        <span>+6dB</span>
+                        <span>+12dB</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Export & Roblox Processing Bar -->
+            <div class="export-strip">
+                <div class="export-format-selector">
+                    <label class="section-label">รูปแบบไฟล์ปลายทาง:</label>
+                    <div class="radio-pill-group">
+                        <label class="radio-pill active">
+                            <input type="radio" name="exportFormat" value="ogg" checked>
+                            <span>OGG Vorbis (Roblox Native, สูงสุด Quality 10, 48kHz)</span>
+                        </label>
+                        <label class="radio-pill">
+                            <input type="radio" name="exportFormat" value="mp3">
+                            <span>MP3 (320kbps, แปลงเร็วพิเศษ)</span>
+                        </label>
+                        <label class="radio-pill">
+                            <input type="radio" name="exportFormat" value="wav">
+                            <span>WAV (16-bit PCM)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="export-action" style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                    <button id="btnProcessExport" class="btn btn-primary btn-large">
+                        <span class="btn-spinner hidden"></span>
+                        <span>ประมวลผลและส่งออกไฟล์เสียง</span>
+                    </button>
+                    <button id="btnMakeBypassExport" class="btn btn-secondary btn-large" style="background: linear-gradient(135deg, rgba(236,72,153,0.25), rgba(168,85,247,0.25)); border-color: #f472b6; color: #fff;">
+                        <span class="btn-spinner hidden"></span>
+                        <span>มาสเตอร์เป็นเพลง Bypass อัตโนมัติ (Auto Mask Intro + Hook Boost)</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Export Result Box -->
+            <div id="exportResultBox" class="export-result-box hidden">
+                <div class="result-header">
+                    <div>
+                        <h3 class="result-title">ประมวลผลไฟล์เสียงสำเร็จ</h3>
+                        <p id="resultFileName" class="result-subtitle">roblox_audio.ogg</p>
+                    </div>
+                    <a id="btnDownloadExport" href="#" class="btn btn-success" download>ดาวน์โหลดไฟล์ลงเครื่อง</a>
+                </div>
+
+                <div class="result-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">ขนาดไฟล์:</span>
+                        <span id="statSize" class="stat-value">0.0 MB</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">ระดับความดังเฉลี่ย (Mean):</span>
+                        <span id="statMean" class="stat-value">0.0 dB</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">ระดับ True Peak:</span>
+                        <span id="statMax" class="stat-value">0.0 dBTP</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Integrated LUFS:</span>
+                        <span id="statLufs" class="stat-value">-14.0 LUFS</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================================================================= -->
+        <!-- TAB 2: ARTIST AUDIO ID CATALOG & SNIFFER                          -->
+        <!-- ================================================================= -->
+        <section id="tab-artist" class="tab-content">
+            <div class="section-card">
+                <div class="section-card-header">
+                    <h2>ดักฟังและค้นหาไอดีเพลง Roblox (Audio Radar &amp; Catalog)</h2>
+                    <p>ระบบดักเพลงสองมิติ: เรดาร์ดักจับเพลงกลุ่มหลบลิขสิทธิ์ (Bypass Network) และ คลังเพลงทางการ (Official Releases)</p>
+                </div>
+
+                <!-- Subtab Switcher: Bypass Radar vs Official Catalog -->
+                <div class="radar-subtabs-wrap mt-3 mb-4">
+                    <button class="radar-subtab-btn active" id="tabBtnBypassRadar">
+                        <span class="subtab-badge-tag">[GLOBAL RADAR]</span>
+                        <span>เรดาร์ดักจับเพลง Roblox เรียลไทม์อิสระ (Autonomous Global Sniffer)</span>
+                    </button>
+                    <button class="radar-subtab-btn" id="tabBtnOfficialCatalog">
+                        <span class="subtab-badge-tag">[CATALOG]</span>
+                        <span>คลังเพลงค่ายทางการ &amp; DistroKid (Official Drops)</span>
+                    </button>
+                </div>
+
+                <!-- ============================================================= -->
+                <!-- VIEW 1: AUTONOMOUS GLOBAL LIVE AUDIO RADAR & MASK DETECTOR    -->
+                <!-- ============================================================= -->
+                <div id="viewBypassRadar" class="bypass-radar-section">
+                    <div class="bypass-radar-card">
+                        <div class="bypass-radar-header">
+                            <div class="live-sniffer-title-wrap">
+                                <span class="badge-bypass-pulse" id="bypassPulseBadge">[GLOBAL LIVE ACTIVE]</span>
+                                <h3 class="live-sniffer-heading">ระบบดักจับไอดีเพลงอิสระทั่วทั้ง Roblox เรียลไทม์ (Autonomous Live Audio Sniffer)</h3>
+                            </div>
+                            <div class="sniffer-toggle-wrap">
+                                <button id="btnAutonomousScanNow" class="btn btn-primary btn-sm">สแกนดักจับเพลงสดทั่วทั้ง Roblox (Scan Live IDs)</button>
+                            </div>
+                        </div>
+                        <p class="live-sniffer-desc">
+                            ดักจับไอดีเพลงใหม่ที่เพิ่งถูกอัปโหลดขึ้นเซิร์ฟเวอร์ Roblox สดๆ วินาทีต่อวินาที โดยการสแกนจับช่วง Asset ID ล่าสุดจาก Roblox โดยตรง 
+                            ตรวจจับได้หมดไม่ว่าใครจะเป็นคนอัปโหลด พร้อมคำนวณและแจ้งเตือนเทคนิค <strong>Quiet Intro Masking</strong> 
+                            (ใส่เสียงเปิดเบาเพื่อหลอก ACRCloud/Audible Magic) และ <strong>Overdrive Clipping (+6.20 dBFS)</strong>
+                        </p>
+
+                        <!-- Autonomous Prober & Direct Audio ID Prober -->
+                        <div class="bypass-input-bar-row mt-3">
+                            <div class="bypass-input-col">
+                                <label class="section-label">สแกนช่วง Asset ID บน Roblox ต่อเนื่อง (Sequential ID Scanner):</label>
+                                <div class="input-inline">
+                                    <input type="text" id="bypassCustomGroupInput" placeholder="เริ่มสแกนจาก Base ID เช่น 73061945436940..." value="73061945436940">
+                                    <button id="btnFetchCustomGroup" class="btn btn-secondary btn-sm">สแกนช่วง ID นี้</button>
+                                </div>
+                            </div>
+                            <div class="bypass-input-col">
+                                <label class="section-label">ตรวจจับรูปแบบ Mask เจาะจงด้วย Audio ID:</label>
+                                <div class="input-inline">
+                                    <input type="text" id="bypassDirectAnalyzeInput" placeholder="ใส่ Audio ID เช่น 73061945436964..." value="73061945436964">
+                                    <button id="btnDirectAnalyzeBypass" class="btn btn-primary btn-sm">วิเคราะห์ Mask</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- DISCORD 191 EMBED DISPLAY CONTAINER (EXACT MATCH TO SCREENSHOT) -->
+                    <div id="discordEmbedCardWrap" class="discord-embed-container mt-4">
+                        <!-- Populated by JavaScript -->
+                    </div>
+
+                    <!-- Bypass Sniffed Tracks List -->
+                    <div class="bypass-results-wrap mt-4">
+                        <div class="catalog-actions-bar">
+                            <div class="catalog-actions-left">
+                                <h4 style="margin: 0; font-size: 0.95rem; font-weight: 600;">รายการเพลงที่ดักพบในกลุ่มเครือข่าย Bypass (ล่าสุดวันนี้)</h4>
+                                <span id="bypassTracksCount" class="count-badge">0 เพลง</span>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive mt-2">
+                            <table class="studio-table" id="bypassTracksTable">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 85px;">เวลาที่อัป</th>
+                                        <th>ชื่อเพลง (Track Name)</th>
+                                        <th>ผู้สร้าง (Creator / Group)</th>
+                                        <th>Audio ID</th>
+                                        <th style="text-align: center; width: 140px;">รูปคลื่นเสียง (Waveform)</th>
+                                        <th style="text-align: right; width: 150px;">การกระทำ</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="bypassTracksTableBody">
+                                    <tr>
+                                        <td colspan="6" style="text-align: center; padding: 2rem; color: var(--text-muted);">กำลังโหลดข้อมูลเพลง Bypass จากเรดาร์...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ============================================================= -->
+                <!-- VIEW 2: OFFICIAL DISTROKID & PARTNER CATALOG                  -->
+                <!-- ============================================================= -->
+                <div id="viewOfficialCatalog" class="official-catalog-section hidden">
+                    <!-- Live Audio Sniffer (Real-time Drop Tracker) -->
+                    <div class="live-sniffer-card mt-3">
+                        <div class="live-sniffer-header">
+                            <div class="live-sniffer-title-wrap">
+                                <span class="badge-live-pulse" id="snifferPulseBadge">[LIVE ACTIVE]</span>
+                                <h3 class="live-sniffer-heading">ระบบดักเพลงอัตโนมัติ Real-Time (Live Audio Sniffer)</h3>
+                                <span class="badge-tag">Auto-Detect Drops</span>
+                            </div>
+                            <div class="sniffer-toggle-wrap">
+                                <button id="btnSniffNow" class="btn btn-secondary btn-sm" style="margin-right: 8px;">สแกนหาเพลงสดใหม่ตอนนี้ (Sniff Now)</button>
+                                <label class="switch-label">
+                                    <input type="checkbox" id="liveSnifferToggle" checked>
+                                    <span class="switch-custom"></span>
+                                    <span class="toggle-text">เปิดเรดาร์ดักเพลงสด (Live Sniffing)</span>
+                                </label>
+                            </div>
+                        </div>
+                        <p class="live-sniffer-desc">
+                            ดักตรวจจับเพลงใหม่ล่าสุดทันทีที่มีการอัปโหลดเข้า Roblox Creator Hub จาก DistroKid / พาร์ตเนอร์
+                            ระบบจะตรวจสอบและส่งแจ้งเตือนเพลงใหม่เข้ามาที่หน้านี้แบบ Real-Time อัตโนมัติ (ตรวจจับทุก 15 วินาที)
+                        </p>
+                        
+                        <!-- Live Drop Stream / Feed Container -->
+                        <div class="live-sniffer-feed" id="liveSnifferFeed">
+                            <div class="feed-empty-state" id="feedEmptyState">
+                                <span>กำลังดักฟังการอัปโหลดเพลงใหม่จาก DistroKid... เพลงใหม่จะปรากฏที่นี่ทันทีเมื่อตรวจพบ</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="filter-search-row mt-4">
+                        <div class="filter-col">
+                            <label class="section-label">ค่ายเพลง / ผู้จัดจำหน่าย (Publisher):</label>
+                            <select id="publisherFilterSelect" class="studio-select">
+                                <option value="">ทั้งหมด (All Publishers)</option>
+                                <option value="DistroKid" selected>DistroKid (Verified Partner)</option>
+                                <option value="APM Music">APM Music (Roblox Official)</option>
+                                <option value="Monstercat">Monstercat (Official EDM)</option>
+                                <option value="NCS">NCS (NoCopyrightSounds)</option>
+                                <option value="Proximity">Proximity</option>
+                                <option value="Epidemic Sound">Epidemic Sound</option>
+                            </select>
+                        </div>
+                        <div class="filter-col">
+                            <label class="section-label">เวลาที่อัปโหลด (Upload Date):</label>
+                            <select id="uploadTimeFilterSelect" class="studio-select">
+                                <option value="all" selected>ทั้งหมด (All Releases)</option>
+                                <option value="today">พึ่งอัปโหลดวันนี้ (Uploaded Today)</option>
+                                <option value="week">สัปดาห์นี้ / 7 วันล่าสุด</option>
+                            </select>
+                        </div>
+                        <div class="filter-col">
+                            <label class="section-label">กรองความยาว (ตัด SFX สั้น):</label>
+                            <select id="durationFilterSelect" class="studio-select">
+                                <option value="10" selected>&gt; 10 วินาที (ตัด SFX หลักหน่วยวิออกทั้งหมด)</option>
+                                <option value="30">&gt; 30 วินาที (เพลงสแตนดาร์ด)</option>
+                                <option value="60">&gt; 60 วินาที (เพลงเต็มท่อน)</option>
+                                <option value="0">ทั้งหมด (รวม SFX สั้น)</option>
+                            </select>
+                        </div>
+                        <div class="search-col">
+                            <label class="section-label">ค้นหาอิสระ (ชื่อเพลง, ศิลปิน, แนวเพลง):</label>
+                            <div class="input-inline">
+                                <input type="text" id="artistSearchInput" placeholder="พิมพ์ชื่อเพลง, ศิลปิน หรือแนว เช่น Alan Walker, Phonk, Lo-Fi, EDM...">
+                                <button id="artistSearchBtn" class="btn btn-primary">
+                                    <span class="btn-spinner hidden"></span>
+                                    <span>ค้นหาไอดีเพลง</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Genre / Vibe Chips -->
+                    <div class="genre-chips-wrap mt-3">
+                        <span class="genre-chips-label">แนวเพลงค้นหาด่วน:</span>
+                        <div class="genre-chips-list">
+                            <button class="genre-chip" data-genre="Phonk">Phonk</button>
+                            <button class="genre-chip" data-genre="Lo-Fi">Lo-Fi</button>
+                            <button class="genre-chip" data-genre="EDM">EDM</button>
+                            <button class="genre-chip" data-genre="Pop">Pop</button>
+                            <button class="genre-chip" data-genre="Rock">Rock</button>
+                            <button class="genre-chip" data-genre="Anime">Anime</button>
+                            <button class="genre-chip" data-genre="Chill">Chill</button>
+                            <button class="genre-chip" data-genre="Synthwave">Synthwave</button>
+                            <button class="genre-chip" data-genre="Trap">Trap</button>
+                            <button class="genre-chip" data-genre="Bass Boost">Bass Boost</button>
+                        </div>
+                    </div>
+
+                    <div class="catalog-actions-bar mt-4">
+                        <div class="catalog-actions-left">
+                            <span id="catalogCountText" class="count-badge">0 เพลง</span>
+                            <button id="btnFetchNextPage" class="btn btn-secondary btn-sm" disabled>ดัก 30 เพลงถัดไป (Next Page)</button>
+                            <button id="btnSniffAllDistrokid" class="btn btn-primary btn-sm">ดักเพลงทั้งหมดของ DistroKid (Sniff All)</button>
+                        </div>
+                        <div class="catalog-actions-right">
+                            <button id="btnBatchCopyIds" class="btn btn-secondary btn-sm" disabled>คัดลอกไอดีทั้งหมด (Batch Copy)</button>
+                        </div>
+                    </div>
+
+                    <!-- Sniff All Progress Container -->
+                    <div id="sniffAllProgressWrap" class="sniff-progress-wrap hidden mt-2">
+                        <div class="progress-bar-container">
+                            <div id="sniffProgressBar" class="progress-bar-fill" style="width: 0%"></div>
+                        </div>
+                        <span id="sniffProgressText" class="progress-text">กำลังดักเพลง... หน้า 1</span>
+                    </div>
+
+                    <div id="artistResultsTable" class="catalog-results-wrapper mt-2">
+                        <table class="catalog-table">
+                            <thead>
+                                <tr>
+                                    <th>Asset ID</th>
+                                    <th>ชื่อเพลง</th>
+                                    <th>ศิลปิน / Creator</th>
+                                    <th>เวลาที่อัปโหลด</th>
+                                    <th>ความยาว</th>
+                                    <th>แนวเพลง</th>
+                                    <th>ฟังตัวอย่าง</th>
+                                    <th>การกระทำ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="artistTableBody">
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted">กรอกชื่อศิลปินหรือเลือกค่ายเพลง แล้วกดค้นหาเพื่อดึงรายชื่อ ID จาก Roblox</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Bonus Tool: Batch ID Extractor -->
+                <div class="batch-extractor-card mt-6">
+                    <div class="batch-extractor-header">
+                        <h3>เครื่องมือสกัดไอดีจากสคริปต์/ข้อความ (Batch Audio ID Extractor)</h3>
+                        <p>วางสคริปต์ Roblox Luau, รหัสผ่าน, แชท หรือข้อความที่มีไอดีเพลงปนอยู่ ระบบจะแยกเฉพาะไอดีเพลงออกมาให้อัตโนมัติ</p>
+                    </div>
+                    <textarea id="batchExtractInput" class="studio-textarea" rows="4" placeholder="วางโค้ดสคริปต์ เช่น:
+local song1 = 'rbxassetid://1837849285'
+local song2 = 1843404009
+..."></textarea>
+                    <div class="batch-extractor-footer mt-2">
+                        <button id="btnExtractIds" class="btn btn-secondary">สกัดไอดีทั้งหมด</button>
+                        <span id="extractedCountBadge" class="count-badge hidden">พบ 0 ไอดี</span>
+                        <div class="batch-extract-copy-btns hidden" id="extractBtnGroup">
+                            <button id="btnCopyExtractedRbx" class="btn btn-secondary btn-sm">คัดลอกแบบ rbxassetid://</button>
+                            <button id="btnCopyExtractedPlain" class="btn btn-secondary btn-sm">คัดลอกเฉพาะตัวเลข</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================================================================= -->
+        <!-- TAB 3: DEEP LOUDNESS INSPECTOR (GRANULAR AUDIO DIAGNOSTIC)         -->
+        <!-- ================================================================= -->
+        <section id="tab-loudness" class="tab-content">
+            <div class="section-card">
+                <div class="section-card-header">
+                    <h2>วิเคราะห์ความดังเสียงเชิงลึก (Deep Audio Loudness Inspector)</h2>
+                    <p>ตรวจวัดค่า Integrated LUFS, Loudness Range (LRA), True Peak (dBTP), Dynamic Range และประเมินความปลอดภัยในการเปิดบนวิทยุ Brookhaven / Da Hood Boombox</p>
+                </div>
+
+                <div class="deep-loudness-inputs">
+                    <div class="input-inline">
+                        <input type="text" id="deepTargetInput" placeholder="กรอก Roblox Asset ID (เช่น 1837849285) หรือชื่อไฟล์เสียงที่อัปโหลด..." value="1837849285">
+                        <button id="btnAnalyzeDeepLoudness" class="btn btn-primary">
+                            <span class="btn-spinner hidden"></span>
+                            <span>วิเคราะห์ระดับความดัง</span>
+                        </button>
+                        <button id="btnAnalyzeCurrentEditor" class="btn btn-secondary">
+                            <span>วิเคราะห์เพลงที่เปิดอยู่ใน Editor</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="deepLoudnessResultBox" class="deep-loudness-results hidden mt-6">
+                    <!-- Metric Cards Grid -->
+                    <div class="metric-cards-grid">
+                        <div class="metric-card">
+                            <span class="metric-card-label">Integrated Loudness</span>
+                            <span id="metricLufs" class="metric-card-value">-14.0</span>
+                            <span class="metric-card-unit">LUFS (EBU R128)</span>
+                            <p class="metric-card-desc">เกณฑ์สากล: -14 LUFS คือระดับความสมดุลที่เหมาะสมที่สุดสำหรับ Roblox</p>
+                        </div>
+
+                        <div class="metric-card">
+                            <span class="metric-card-label">True Peak</span>
+                            <span id="metricTruePeak" class="metric-card-value">-1.0</span>
+                            <span class="metric-card-unit">dBTP</span>
+                            <p class="metric-card-desc">ไม่ควรเกิน -1.0 dBTP เพื่อป้องกันการแตกพร่าของเสียงในระบบเสียงดิจิทัล</p>
+                        </div>
+
+                        <div class="metric-card">
+                            <span class="metric-card-label">Max Sample Peak</span>
+                            <span id="metricMaxPeak" class="metric-card-value">-0.5</span>
+                            <span class="metric-card-unit">dBFS</span>
+                            <p class="metric-card-desc">ระดับคลื่นเสียงสูงสุดจริง</p>
+                        </div>
+
+                        <div class="metric-card">
+                            <span class="metric-card-label">Loudness Range (LRA)</span>
+                            <span id="metricLra" class="metric-card-value">6.5</span>
+                            <span class="metric-card-unit">LU</span>
+                            <p class="metric-card-desc">ความกว้างของช่วงไดนามิกระหว่างท่อนเบาที่สุดและดังที่สุด</p>
+                        </div>
+
+                        <div class="metric-card">
+                            <span class="metric-card-label">Mean RMS Volume</span>
+                            <span id="metricMeanVol" class="metric-card-value">-16.2</span>
+                            <span class="metric-card-unit">dB</span>
+                            <p class="metric-card-desc">ระดับความดังเฉลี่ยตลอดทั้งเพลง</p>
+                        </div>
+
+                        <div class="metric-card">
+                            <span class="metric-card-label">Dynamic Range &amp; Headroom</span>
+                            <span id="metricDynRange" class="metric-card-value">15.7</span>
+                            <span class="metric-card-unit">dB</span>
+                            <p id="metricHeadroom" class="metric-card-desc">Headroom: +1.5 dB ถึงขีดจำกัด 0 dBFS</p>
+                        </div>
+                    </div>
+
+                    <!-- Boombox Safety Assessment Banner -->
+                    <div class="safety-banner mt-6" id="safetyBanner">
+                        <div class="safety-header">
+                            <div class="safety-status-wrap">
+                                <span class="safety-status-tag" id="safetyTag">[SAFE / STUDIO CLEAN]</span>
+                                <h3 id="safetyTitle">การประเมินความปลอดภัยในวิทยุ Boombox</h3>
+                            </div>
+                            <button id="btnApplyRecGain" class="btn btn-secondary btn-sm">นำค่า Gain แนะนำไปใส่ใน Timeline Editor</button>
+                        </div>
+                        <p id="safetyMessage" class="safety-text">กำลังโหลดการวิเคราะห์...</p>
+                        <div class="gain-rec-box mt-2">
+                            <span>คำแนะนำการปรับแต่งเกน:</span>
+                            <strong id="gainRecText">+0.0 dB</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================================================================= -->
+        <!-- TAB 4: MAP COMPATIBILITY SCANNER (BOOMBOX PLACES)                 -->
+        <!-- ================================================================= -->
+        <section id="tab-places" class="tab-content">
+            <div class="section-card">
+                <div class="section-card-header">
+                    <h2>ตรวจสอบความเข้ากันได้กับแมพและ Boombox (Map Compatibility Scanner)</h2>
+                    <p>ค้นหาว่าไอดีเพลงนี้รองรับและสามารถเปิดในแมพใดได้บ้าง (เช่น Brookhaven RP, Da Hood, Club Iris ฯลฯ) พร้อมตรวจสอบสถานะการอนุมัติและนโยบายความเป็นส่วนตัว</p>
+                </div>
+
+                <div class="map-scan-input-row">
+                    <div class="input-inline">
+                        <input type="text" id="mapScanIdInput" placeholder="กรอก Roblox Asset ID ที่ต้องการตรวจสอบ เช่น 96060716110319 หรือ 1837849285...">
+                        <button id="btnScanMaps" class="btn btn-primary">
+                            <span class="btn-spinner hidden"></span>
+                            <span>สแกนความเข้ากันได้กับทุกแมพ</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="auth-status-indicator mt-2">
+                    <span class="badge-tag" style="background: rgba(16, 185, 129, 0.12); color: #34d399; border-color: rgba(16, 185, 129, 0.35);">
+                        [ROBLOX ACTIVE] เชื่อมต่อระบบตรวจสอบสิทธิ์ระดับ Place Context อัตโนมัติเรียบร้อย
+                    </span>
+                </div>
+
+                <!-- Audio ID Overview Card -->
+                <div id="mapAudioOverview" class="audio-overview-card hidden mt-4">
+                    <div class="overview-cover-col">
+                        <img id="overviewCoverImg" class="overview-cover-img" src="" alt="Audio Cover">
+                        <button type="button" id="btnPlayOverviewMini" class="overview-play-fab" title="ฟังเพลงตัวอย่าง">
+                            <svg id="overviewMiniPlayIcon" viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                            <svg id="overviewMiniPauseIcon" class="hidden" viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+                        </button>
+                    </div>
+                    <div class="overview-left">
+                        <div class="overview-header-row">
+                            <span id="overviewRatioBadge" class="badge-status-ratio">[0/100+ place(s)]</span>
+                            <span id="overviewStatusBadge" class="badge-status-approved">[รอการสแกน]</span>
+                            <h3 id="overviewTitle" class="overview-title">Roblox Audio</h3>
+                            <span id="overviewCensoredTag" class="badge-tag-censored hidden">[CENSORED ##### IN STORE]</span>
+                        </div>
+                        <div class="overview-meta-row">
+                            <span>ศิลปิน: <strong id="overviewArtist">Craig McConnell</strong></span>
+                            <span class="meta-sep">•</span>
+                            <span>ความยาว: <strong id="overviewDuration">02:30</strong></span>
+                            <span class="meta-sep">•</span>
+                            <span>Asset ID: <code id="overviewId">1837849285</code></span>
+                        </div>
+
+                        <!-- Audio Preview Player Bar -->
+                        <div class="overview-player-bar mt-2">
+                            <input type="range" id="overviewAudioSeeker" class="overview-seeker" min="0" max="100" value="0">
+                            <div class="overview-player-time">
+                                <span id="overviewCurTime">00:00</span> / <span id="overviewTotalTime">00:00</span>
+                            </div>
+                        </div>
+
+                        <!-- Permitted Places List (matching user's request) -->
+                        <div id="permittedPlacesSection" class="permitted-places-section mt-3">
+                            <span class="permitted-label">รายชื่อแมพที่ได้รับอนุญาตให้เปิดเพลงนี้ได้:</span>
+                            <div id="permittedPlacesList" class="permitted-pills-list">
+                                <!-- Populated dynamically e.g. [ซิตี้ไทยแลนด์ 2] 4503309821, [[HLWN] หลบหลีก] 9872472334 ... -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="overview-actions">
+                        <button type="button" id="btnPlayOverviewAudio" class="btn btn-secondary btn-sm">ฟังเพลงตัวอย่าง</button>
+                        <a id="overviewStoreLink" href="#" target="_blank" rel="noopener" class="btn btn-primary btn-sm">เปิดใน Roblox Store</a>
+                        <button type="button" id="btnLoadOverviewToEditor" class="btn btn-secondary btn-sm">เปิดใน Editor</button>
+                    </div>
+                </div>
+
+                <!-- 1-Click Luau Sound Snippet Generator -->
+                <div id="luauSnippetCard" class="luau-snippet-card hidden mt-4">
+                    <div class="snippet-header">
+                        <span class="snippet-label">โค้ด Luau Sound พร้อมใช้ใน Roblox Studio / Script:</span>
+                        <button id="btnCopyLuauCode" class="btn btn-micro">คัดลอกโค้ด</button>
+                    </div>
+                    <pre><code id="luauCodeText">local sound = Instance.new("Sound")
+sound.SoundId = "rbxassetid://1837849285"
+sound.Volume = 1
+sound.Parent = workspace
+sound:Play()</code></pre>
+                </div>
+
+                <!-- Custom Place / Game Compatibility Verifier -->
+                <div class="custom-place-card mt-5">
+                    <div class="custom-place-header">
+                        <div class="custom-place-title-wrap">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mini-icon">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="2" y1="12" x2="22" y2="12"></line>
+                                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                            </svg>
+                            <span class="custom-place-heading">ตรวจสอบเฉพาะแมพที่คุณระบุ (Place ID หรือ Game URL)</span>
+                        </div>
+                        <span class="badge-tag">Roblox API Real Handshake</span>
+                    </div>
+                    <p class="custom-place-desc">ป้อน Place ID หรือลิงก์เกม Roblox ที่คุณต้องการเปิดเพลง ระบบจะดึง Universe ID และเทียบเจ้าของแมพกับผู้สร้างเพลงจริงตามกลไก Roblox Privacy Policy</p>
+                    
+                    <div class="custom-place-input-row">
+                        <input type="text" id="customPlaceInput" placeholder="กรอก Place ID หรือ Game Link เช่น 189707 หรือ https://www.roblox.com/games/189707/Natural-Disaster-Survival">
+                        <button id="btnVerifyCustomPlace" class="btn btn-secondary">
+                            <span class="btn-spinner hidden"></span>
+                            <span>ตรวจสอบแมพนี้</span>
+                        </button>
+                    </div>
+
+                    <!-- Custom Place Result Box -->
+                    <div id="customPlaceResultBox" class="custom-place-result hidden mt-3">
+                        <div class="custom-result-header">
+                            <div class="custom-place-meta">
+                                <span id="customPlaceBadge" class="badge-status-approved">[COMPATIBLE / ผ่าน]</span>
+                                <h4 id="customPlaceName">Experience Name</h4>
+                            </div>
+                            <div class="custom-creator-tags">
+                                <span id="customCreatorTag" class="tag-meta">เจ้าของแมพ: -</span>
+                                <span id="customAudioCreatorTag" class="tag-meta">ผู้สร้างเพลง: -</span>
+                            </div>
+                        </div>
+                        <p id="customPlaceReason" class="custom-reason-text">ข้อความตรวจสอบสิทธิ์...</p>
+                    </div>
+                </div>
+
+                <!-- Map Filter & Search Toolbar -->
+                <div class="map-filter-toolbar mt-6">
+                    <div class="map-search-wrap">
+                        <input type="text" id="mapFilterSearch" placeholder="ค้นหาชื่อแมพ เช่น Brookhaven, Da Hood, Bloxburg, Car, PVP...">
+                    </div>
+                    <div class="map-category-pills">
+                        <button class="map-cat-pill active" data-cat="all">ทั้งหมด</button>
+                        <button class="map-cat-pill" data-cat="Thai Community">เซิร์ฟเวอร์ไทย</button>
+                        <button class="map-cat-pill" data-cat="Roleplay">Roleplay</button>
+                        <button class="map-cat-pill" data-cat="Driving & Cars">ขับรถ / รถยนต์</button>
+                        <button class="map-cat-pill" data-cat="Action & PVP">Action & PVP</button>
+                        <button class="map-cat-pill" data-cat="Social & Hangout">Social & Hangout</button>
+                        <button class="map-cat-pill" data-cat="Classic">Classic</button>
+                    </div>
+                    <span id="mapCounterText" class="count-badge">แสดง 100+ แมพที่มี Boombox</span>
+                </div>
+
+                <!-- Map Compatibility Grid -->
+                <div class="places-grid mt-4" id="placesGrid">
+                    <!-- Populated dynamically by JS -->
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================================================================= -->
+        <!-- TAB 5: ROBLOX UPLOADER & GUIDE                                    -->
+        <!-- ================================================================= -->
+        <section id="tab-upload" class="tab-content">
+            <div class="section-card">
+                <div class="section-card-header">
+                    <h2>อัปโหลดเพลงเข้าบัญชี Roblox (Roblox Audio Uploader)</h2>
+                    <p>ระบบอัปโหลดไฟล์เสียง .OGG ตรงเข้าบัญชี Roblox ของคุณผ่าน Roblox Open Cloud API</p>
+                </div>
+
+                <div class="uploader-layout">
+                    <div class="uploader-form">
+                        <label class="section-label">Roblox Open Cloud API Key:</label>
+                        <input type="password" id="robloxApiKey" placeholder="ป้อนคีย์ API Key ที่สร้างจาก Roblox Creator Hub">
+                        <p class="field-hint">ต้องมีสิทธิ์ Permissions: <code>assets:write</code> และ <code>assets:read</code></p>
+
+                        <label class="section-label mt-4">Roblox User ID หรือ Group ID ของคุณ:</label>
+                        <input type="text" id="robloxCreatorId" placeholder="เช่น 123456789">
+
+                        <label class="section-label mt-4">ชื่อเพลง (Display Name):</label>
+                        <input type="text" id="robloxAssetName" placeholder="เช่น Brookhaven Phonk Mix 2026">
+
+                        <button id="btnRobloxCloudUpload" class="btn btn-primary mt-4">
+                            <span class="btn-spinner hidden"></span>
+                            <span>อัปโหลดเพลงเข้า Roblox ตอนนี้</span>
+                        </button>
+                    </div>
+
+                    <div class="uploader-guide">
+                        <h3>ขั้นตอนการอัปโหลดผ่าน Creator Hub (แบบฟรี 100%)</h3>
+                        <ol class="guide-steps">
+                            <li>ส่งออกไฟล์เสียงจากแท็บ Timeline Editor เป็นฟอร์แมต <strong>OGG Vorbis</strong> (ไฟล์จะถูกปรับเป็น 48kHz คุณภาพสูงสุดที่ Roblox แนะนำ)</li>
+                            <li>เปิดเว็บ <strong><a href="https://create.roblox.com/dashboard/creations?activeTab=Audio" target="_blank" rel="noopener">Roblox Creator Hub Dashboard</a></strong></li>
+                            <li>ไปที่แท็บ <strong>Development Items &gt; Audio</strong></li>
+                            <li>คลิกปุ่ม <strong>Upload Asset</strong> แล้วลากไฟล์ <code>.ogg</code> ที่ดาวน์โหลดจากโปรแกรมนี้ไปวาง</li>
+                            <li>กดปุ่ม <strong>Upload</strong> คุณจะได้รับ <strong>Asset ID</strong> เพื่อนำไปเปิดในเกมได้ทันที</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Global Toast Notifications -->
+    <div id="toast" class="toast hidden">
+        <span id="toastMsg">Action completed</span>
+    </div>
+
+    <script src="/static/studio.js?v=2.1"></script>
+</body>
+</html>
